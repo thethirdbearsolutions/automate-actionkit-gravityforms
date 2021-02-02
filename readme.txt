@@ -30,7 +30,7 @@ Shamelessly forked with gratitude from https://github.com/rtCamp/automate-slack-
 Note: Your Gravity Form must have an email field and it must be manually mapped to ActionKit's "email" parameter (unless you are doing something
 fancier involving an akid parameter) 
 
-Development of this plugin is done on [GitHub](https://github.com/thirdbearsolutions/automate-actionkit-gravityforms). You can report issues and suggest features.
+Development of this plugin is done on [GitHub](https://github.com/thethirdbearsolutions/automate-actionkit-gravityforms). You can report issues and suggest features.
 
 
 == Changelog ==
