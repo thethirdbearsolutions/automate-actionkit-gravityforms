@@ -252,13 +252,16 @@ class automate_actionkit_gravityforms_public extends GFFeedAddOn {
         
         $result = $this->api->act( $payload );
 
-        if ( rgar( $result, 'redirect_url' ) ) {
+        if ( rgar( $result['response'], 'redirect_url' ) ) {
             $this->add_note( $entry['id'],
                              esc_html__( json_encode($result),
                                          'automate-actionkit-gravityforms' ),
                              'success' );
         } else {
-            $this->add_feed_error( esc_html__( json_encode($result),
+            $debug = array();
+            $debug['result'] = $result;
+            $debug['payload'] = $payload;
+            $this->add_feed_error( esc_html__( json_encode($debug),
                                                'automate-actionkit-gravityforms' ), 
                                    $feed, $entry, $form );
         }

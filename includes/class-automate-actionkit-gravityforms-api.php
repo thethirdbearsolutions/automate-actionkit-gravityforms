@@ -49,7 +49,11 @@
 				die( 'Request failed. '. $response->get_error_messages() );
 				
 			} else {
-				return json_decode( $response['body'], true );		
+                $info = array(
+                    'response' => json_decode( $response['body'], true ),
+                    'url' => $request_url
+                );
+				return $info;
 				
 			}
 			
