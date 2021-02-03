@@ -144,6 +144,30 @@ class automate_actionkit_gravityforms_public extends GFFeedAddOn {
                         'class'          => 'medium',
                         'tooltip'        => $this->tooltip_for_feed_setting( 'source' ),
                     ),
+                    array(
+                        'label'   => "Subscription behavior",
+                        'type'    => 'checkbox',
+                        'name'    => 'suppress_opt_in',
+                        'tooltip' => '',
+                        'choices' => array(
+                            array(
+                                'label' => "Don't change subscriptions",
+                                'name'  => 'suppress_opt_in'
+                            )
+                        )
+                    ),
+                    array(
+                        'label'   => 'After-action email behavior',
+                        'type'    => 'checkbox',
+                        'name'    => 'skip_confirmation',
+                        'tooltip' => '',
+                        'choices' => array(
+                            array(
+                                'label' => 'Suppress after-action email',
+                                'name'  => 'suppress_email'
+                            )
+                        )
+                    ),
 		            array(
                         'name'                => 'metaData',
                         'label'               => esc_html__( 'Additional field mapping', 'automate-actionkit-gravityforms' ),
@@ -153,6 +177,11 @@ class automate_actionkit_gravityforms_public extends GFFeedAddOn {
                         'tooltip'             => '<h6>' . esc_html__( 'Metadata', 'sometextdomain' ) . '</h6>' . esc_html__( 'Map form fields to ActionKit fields here. Use the ActionKit field names, e.g. first_name, source, action_my_custom_field_name, user_my_custom_field_name, mobile_phone, etc.', 'automate-actionkit-gravityforms' ),
                         //validation_callback' => array( $this, 'validate_custom_meta' ),
                     ),
+                    array(
+                        'type'  => 'feed_condition',
+                        'name'  => 'sync_condition',
+                        'label' => 'Conditional sync',
+                    )
                 )
             )
         );
@@ -246,21 +275,30 @@ class automate_actionkit_gravityforms_public extends GFFeedAddOn {
         $payload['page'] = $feed['meta']['page'];
         $payload['source'] = $feed['meta']['source'];
 
+        if ( $feed['meta']['skip_confirmation'] ) {
+            $payload['skip_confirmation'] = '1';
+        }
+
+        if ( $feed['meta']['suppress_opt_in'] ) {
+            $payload['opt_in'] = '1';
+        }
+        
         foreach($fields as $key => $field_id) {
             $payload[$key] = $this->get_field_value($form, $entry, $field_id);
         }
         
         $result = $this->api->act( $payload );
 
+        $debug = array();
+        $debug['result'] = $result;
+        $debug['payload'] = $payload;
+
         if ( rgar( $result['response'], 'redirect_url' ) ) {
             $this->add_note( $entry['id'],
-                             esc_html__( json_encode($result),
+                             esc_html__( json_encode($debug),
                                          'automate-actionkit-gravityforms' ),
                              'success' );
         } else {
-            $debug = array();
-            $debug['result'] = $result;
-            $debug['payload'] = $payload;
             $this->add_feed_error( esc_html__( json_encode($debug),
                                                'automate-actionkit-gravityforms' ), 
                                    $feed, $entry, $form );
